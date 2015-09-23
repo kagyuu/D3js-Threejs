@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Axis</title>        
+        <link rel="stylesheet" type="text/css" href="3DGraph.css"/>
+        <style src="3DGraph.css"></style>
+    </head>
+    <body>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r72/three.min.js"></script>
+        <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>        
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>        
+        <script type="text/javascript" src="3DGraph.js" charset="utf-8"></script>
+    <script>
+// N225
+var dataset = [
+    {"date":1371999600000,"value":13062},
+    {"date":1372086000000,"value":12969},
+    {"date":1372172400000,"value":12834},
+    {"date":1372258800000,"value":13213},
+    {"date":1372345200000,"value":13677},
+    {"date":1372604400000,"value":13852}
+];
+
+var svg = plot('N225', dataset, 360, 180, 'linear', 'black');
+$('body').append('<p>svg</p>');
+$('body').append(svg);
+
+var canvas = svg2canvas(svg);
+$('body').append('<p>canvas</p>');
+$('body').append(canvas);
+
+$('body').append('<p>png<p>');
+$("body").append('<img src=\"' + canvas2png(canvas) + '\"/>');
+
+    </script>
+    </body>
+</html>

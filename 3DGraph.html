@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Axis</title>        
+        <link rel="stylesheet" type="text/css" href="3DGraph.css"/>
+        <style src="3DGraph.css"></style>
+    </head>
+    <body>
+        <script type="text/javascript" src="three.min.js"></script>
+        <script type="text/javascript" src="Projector.js"></script>
+        <script type="text/javascript" src="CanvasRenderer.js"></script>
+        <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>        
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>        
+        <script type="text/javascript" src="3DGraph.js" charset="utf-8"></script>
+    <script>
+var stockValues = [
+{ market : "Nikkei 225", color : 'cyan', dataset : [
+    {"date":new Date('Sep 14,2015').getTime(),"value":18070},
+    {"date":new Date('Sep  7,2015').getTime(),"value":18264},
+    {"date":new Date('Aug 31,2015').getTime(),"value":17792},
+    {"date":new Date('Aug 24,2015').getTime(),"value":19136},
+    {"date":new Date('Aug 17,2015').getTime(),"value":19435},
+    {"date":new Date('Aug 10,2015').getTime(),"value":20519},
+    {"date":new Date('Aug  3,2015').getTime(),"value":20724},
+    {"date":new Date('Jul 27,2015').getTime(),"value":20585},
+    {"date":new Date('Jul 20,2015').getTime(),"value":20544},
+    {"date":new Date('Jul 13,2015').getTime(),"value":20650},
+    {"date":new Date('Jul  6,2015').getTime(),"value":19779},
+    {"date":new Date('Jun 29,2015').getTime(),"value":20539},
+    {"date":new Date('Jun 23,2015').getTime(),"value":20706},
+    {"date":new Date('Jun 15,2015').getTime(),"value":20174},
+    {"date":new Date('Jun  8,2015').getTime(),"value":20407},
+    {"date":new Date('Jun  1,2015').getTime(),"value":20460},
+]},
+{ market : "N.Y. DOW", color : 'yellow', dataset : [
+    {"date":new Date('Sep 14,2015').getTime(),"value":16384},
+    {"date":new Date('Sep  7,2015').getTime(),"value":16433},
+    {"date":new Date('Aug 31,2015').getTime(),"value":16102},
+    {"date":new Date('Aug 24,2015').getTime(),"value":16643},
+    {"date":new Date('Aug 17,2015').getTime(),"value":16459},
+    {"date":new Date('Aug 10,2015').getTime(),"value":17477},
+    {"date":new Date('Aug  3,2015').getTime(),"value":17373},
+    {"date":new Date('Jul 27,2015').getTime(),"value":17689},
+    {"date":new Date('Jul 20,2015').getTime(),"value":17568},
+    {"date":new Date('Jul 13,2015').getTime(),"value":18086},
+    {"date":new Date('Jul  6,2015').getTime(),"value":17760},
+    {"date":new Date('Jun 29,2015').getTime(),"value":17730},
+    {"date":new Date('Jun 23,2015').getTime(),"value":17946},
+    {"date":new Date('Jun 15,2015').getTime(),"value":18015},
+    {"date":new Date('Jun  8,2015').getTime(),"value":17898},
+    {"date":new Date('Jun  1,2015').getTime(),"value":17849},
+]},
+{ market : "Shanghai", color : 'red', dataset : [
+    {"date":new Date('Sep 14,2015').getTime(),"value":3097},
+    {"date":new Date('Sep  7,2015').getTime(),"value":3200},
+    {"date":new Date('Aug 31,2015').getTime(),"value":3160},
+    {"date":new Date('Aug 24,2015').getTime(),"value":3232},
+    {"date":new Date('Aug 17,2015').getTime(),"value":3507},
+    {"date":new Date('Aug 10,2015').getTime(),"value":3965},
+    {"date":new Date('Aug  3,2015').getTime(),"value":3744},
+    {"date":new Date('Jul 27,2015').getTime(),"value":3663},
+    {"date":new Date('Jul 20,2015').getTime(),"value":4070},
+    {"date":new Date('Jul 13,2015').getTime(),"value":3957},
+    {"date":new Date('Jul  6,2015').getTime(),"value":3877},
+    {"date":new Date('Jun 29,2015').getTime(),"value":3686},
+    {"date":new Date('Jun 23,2015').getTime(),"value":4192},
+    {"date":new Date('Jun 15,2015').getTime(),"value":4478},
+    {"date":new Date('Jun  8,2015').getTime(),"value":5166},
+    {"date":new Date('Jun  1,2015').getTime(),"value":5023},
+]}
+];
+
+// mouse
+var mouseX = 0;
+var mouseY = 0;
+
+var windowX = window.innerWidth;
+var windowY = window.innerHeight;
+var windowHalfX = windowX / 2;
+var windowHalfY = windowY / 2;
+
+$(document).on('mousemove', function(event) {
+    mouseX = (event.clientX - windowHalfX) / windowX;
+    mouseY = (event.clientY - windowHalfY) / windowY;
+});
+
+// (1) Scene
+var scene = new THREE.Scene();
+  
+// (2) Light
+var ambient = new THREE.AmbientLight( 0x404040 );
+scene.add( ambient );
+ 
+var spotlight = new THREE.SpotLight( 0xffffff, 3, 0, Math.PI / 2 );
+spotlight.target.position.set(0,0,0);
+spotlight.position.z = 100;
+scene.add(spotlight);
+  
+// (3) Camera
+//var camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
+var camera = new THREE.OrthographicCamera( window.innerWidth/-3,window.innerWidth/3,window.innerHeight/3,window.innerHeight/-3,0.1 , 2000 );
+
+camera.position.x = 1000.0 * Math.sin(2.0 * Math.PI * mouseX);
+camera.position.y = 2000.0 * mouseY;
+camera.position.z = 1000.0 * Math.cos(2.0 * Math.PI * mouseX);
+ 
+camera.lookAt(new THREE.Vector3(-1.0 * camera.position.x ,-1.0 * camera.position.y,-1.0 * camera.position.z));
+  
+// (4) Plane
+var offset = 0;
+for (stockValue of stockValues) {
+	// テクスチャを作成
+	var svg = plot(stockValue.market, stockValue.dataset, 512, 128, 'linear', stockValue.color);
+	var canvas = svg2canvas(svg);
+	
+/*
+	var texture = new THREE.Texture(canvas);
+	texture.needsUpdate = true;
+*/
+	var texture = THREE.ImageUtils.loadTexture(canvas2png(canvas));
+	
+	// 質感
+	var planeMaterial = new THREE.MeshBasicMaterial({
+	   map : texture,
+	   overdraw: true,
+	   side:THREE.DoubleSide,
+	   transparent: true,
+	   color: 0xffffff,
+	});
+	
+	var plane = new THREE.Mesh(new THREE.PlaneGeometry( 512, 128 ), planeMaterial);
+	plane.position.y = 64;
+	plane.position.z = offset;
+	scene.add(plane);
+	
+	offset -= 40;
+}
+
+/*
+// xyz軸 (補助線)
+var axes = new THREE.AxisHelper(1000);
+scene.add( axes );
+*/
+  
+//GridHelper(大きさ, １マスの大きさ)
+var grid = new THREE.GridHelper(300, 10);
+scene.add(grid);
+
+
+// (5) WebGL Renderer
+//renderer = new THREE.WebGLRenderer(); // webgl is good but we want to run in webview component of javafx.
+renderer = new THREE.CanvasRenderer();
+renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.setClearColor(0x000000);
+renderer.clear(true);
+$('body').append( renderer.domElement );
+  
+// (6) Animation
+function animation() {
+    camera.position.x = 1000.0 * Math.sin(2.0 * Math.PI * mouseX);
+    camera.position.y = 2000.0 * mouseY;
+    camera.position.z = 1000.0 * Math.cos(2.0 * Math.PI * mouseX);
+     
+    camera.lookAt(new THREE.Vector3(-1.0 * camera.position.x ,-1.0 * camera.position.y,-1.0 * camera.position.z));
+      
+    spotlight.position.x = camera.position.x;
+    spotlight.position.y = camera.position.y;
+    spotlight.position.z = camera.position.z;
+  
+    renderer.render( scene, camera );
+    requestAnimationFrame(animation)
+}
+  
+animation();	
+
+
+    </script>
+    </body>
+</html>

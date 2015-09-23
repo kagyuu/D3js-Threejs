@@ -1,0 +1,39 @@
+body {
+	margin : 0px;
+}
+
+/** 軸 */
+.axis path,
+.axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+ 
+.axis text {
+    font-family: sans-serif;
+    font-size: 8px;
+}
+
+/** 目盛線 */
+.axis .major line {
+    fill: none;
+    stroke: cyan;
+    stroke-dasharray: 5,5;
+    shape-rendering: crispEdges;
+}
+
+/** tick **/
+.axis .major text {
+    font-family: sans-serif;
+    font-size: 12px;
+    stroke: yellowgreen;
+}
+
+/** 補助目盛線 */
+.axis .minor {
+    fill: none;
+    stroke: cyan;
+    stroke-dasharray: 5,10;
+    shape-rendering: crispEdges;
+}
